@@ -1,0 +1,12 @@
+# Core Machine Learning & Neural Networks
+torch
+
+# Hugging Face Ecosystem 
+transformers
+accelerate
+
+# Computation and Array Manipulation
+numpy
+
+# Visualization and Plotting 
+matplotlib
