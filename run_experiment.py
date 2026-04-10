@@ -1,5 +1,5 @@
 import torch
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import T5Tokenizer, T5ForConditionalGeneration , AutoModelForCausalLM ,AutoTokenizer
 
 from core.surgery import swap_linear_layers
 from methods.absmax import AbsMaxQuantizer
@@ -14,7 +14,7 @@ def main():
     print("="*60)
     
     device = torch.device("cpu")
-    model_name = "google/flan-t5-small"
+    model_name = "EleutherAI/pythia-70m"
     
     # --------------------------------------------------------
     #  MASTER CONFIGURATION (Centralized)
@@ -30,8 +30,9 @@ def main():
 
     # 1. Load Model & Tokenizer
     print(f"\n[1] Loading tokenizer and model: {model_name}")
-    tokenizer = T5Tokenizer.from_pretrained(model_name)
-    model = T5ForConditionalGeneration.from_pretrained(model_name).to(device)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer.pad_token = tokenizer.eos_token
+    model = AutoModelForCausalLM.from_pretrained(model_name).to(device)
 
     # 2. Baseline Evaluation
     if test_ppl:
@@ -47,7 +48,7 @@ def main():
         q_model = swap_linear_layers(model, quantizer)
         
     elif quantizer_type == "zeropoint":
-        quantizer = ZeroPointQuantizer(bits=8)
+        quantizer = ZeroPointQuantizer(bits=4)
         q_model = swap_linear_layers(model, quantizer)
         
     elif quantizer_type == "nestquant":
@@ -72,14 +73,14 @@ def main():
         print(f"     Quantized Perplexity: {q_ppl:.4f}")
 
     # 5. Qualitative Translation Test
+
     print("\n[5] Qualitative Generation Test")
-    text = "A large language model is a computational model notable for its ability to achieve general-purpose language generation."
-    input_text = f"translate from english to french: {text}"
+    input_text = "The most important discovery in computer science is"
     input_ids = tokenizer(input_text, return_tensors="pt").input_ids.to(device)
     
-    q_outputs = q_model.generate(input_ids, max_length=50)
+    q_outputs = q_model.generate(input_ids, max_length=30)
     q_text = tokenizer.decode(q_outputs[0], skip_special_tokens=True)
-    print(f"    Input:  {text}")
+    print(f"    Input:  {input_text}")
     print(f"    Output: {q_text}")
     
     print("\n" + "="*60)

@@ -38,8 +38,8 @@ def swap_linear_layers(
             # VISUALIZATION HOOK
             # ---------------------------------------------------------
             layers_to_plot = [
-                "encoder.block.0.layer.0.SelfAttention.q", 
-                "encoder.block.5.layer.1.DenseReluDense.wi_1"
+                "gpt_neox.layers.0.attention.query_key_value", 
+                "gpt_neox.layers.5.mlp.dense_4h_to_h"
             ]
             
             if full_name in layers_to_plot:
