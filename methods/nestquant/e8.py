@@ -3,9 +3,9 @@ import torch
 # -------------------------------------------------------------------------
 # GLOBAL LATTICE MATRICES
 # -------------------------------------------------------------------------
-# WHAT: The Generator Matrix (G) defines the spatial structure of the E8 Lattice.
-# WHY: Multiplying an integer vector by G maps it to a valid E8 lattice point.
-# TWEAK HERE: If you want to experiment with a differently scaled E8 lattice 
+# The Generator Matrix (G) defines the spatial structure of the E8 Lattice.
+# Multiplying an integer vector by G maps it to a valid E8 lattice point.
+# If you want to experiment with a differently scaled E8 lattice 
 # (e.g., the 2*E8 basis used in their CUDA kernels), you change this matrix. 
 # G_inv will automatically update itself.
 G = torch.tensor([
@@ -26,8 +26,9 @@ G_inv = torch.inverse(G)
 # -------------------------------------------------------------------------
 def encode_e8(x: torch.Tensor) -> torch.Tensor:
     """
-    WHAT: Maps a batch of 8D continuous vectors to their nearest E8 lattice points.
-    WHY: This is Semyon's 'branchless' optimization. By avoiding Python if/else 
+    Maps a batch of 8D continuous vectors to their nearest E8 lattice points.
+    (taken from author's Repo)
+    This is 'branchless' optimization. By avoiding Python if/else 
     statements, this function can process millions of weights on a CPU/GPU instantly 
     without stalling the execution pipeline.
     """
@@ -75,15 +76,15 @@ def encode_e8(x: torch.Tensor) -> torch.Tensor:
 
 def generate_dither(n_blocks: int, device: torch.device, seed: int = 42) -> torch.Tensor:
     """
-    WHAT: Generates 'Subtractive Dither' (Uniform random noise within the Voronoi cell).
-    WHY: This is a crucial safety hack. Adding random noise before quantization breaks 
+    Generates 'Subtractive Dither' (Uniform random noise within the Voronoi cell).
+    This is a crucial safety hack. Adding random noise before quantization breaks 
     up correlated rounding errors. Without this, the QA-LDLQ error-feedback loop will 
-    snowball, causing catastrophic model collapse (the 1.1 Billion perplexity bug).
+    snowball, causing catastrophic model collapse ( 1.1 Billion perplexity).
     """
     generator = torch.Generator(device=device)
     generator.manual_seed(seed)
     
-    # TWEAK HERE: The dither bounds are implicitly set by the * 2.0 multiplier. 
+    # The dither bounds are implicitly set by the * 2.0 multiplier. 
     # If the model behaves too noisily during experiments, you can reduce this 
     # (e.g., * 1.5) to inject less noise, though 2.0 is the paper's default.
     U = torch.rand((n_blocks, 8), generator=generator, device=device, dtype=torch.float32) * 2.0

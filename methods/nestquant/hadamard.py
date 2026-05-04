@@ -7,8 +7,8 @@ _HADAMARD_CACHE: dict[tuple[int, str, int | None], torch.Tensor] = {}
 
 def get_hadamard_matrix(n: int, device: torch.device) -> torch.Tensor:
     """
-    WHAT: Constructs an orthogonal rotation matrix tailored to dimension n.
-    WHY: Rotating weights by this matrix spreads 'spiky' outliers evenly 
+    Constructs an orthogonal rotation matrix tailored to dimension n.
+    Rotating weights by this matrix spreads 'spiky' outliers evenly 
     across all 8 dimensions, preventing single massive weights from overloading 
     the 4-bit lattice bounds.
     """
@@ -44,7 +44,7 @@ def get_hadamard_matrix(n: int, device: torch.device) -> torch.Tensor:
             H_remainder = H_random * np.sqrt(m)
             H = torch.kron(H_remainder.contiguous(), H_power_of_2.contiguous()).to(device)
 
-    # IMPORTANT: Divide by sqrt(n) to ensure the matrix is perfectly Orthogonal.
+    # Divide by sqrt(n) to ensure the matrix is perfectly Orthogonal.
     # Without this, the rotation would massively inflate the magnitude of the weights.
     H = H / np.sqrt(n)
     _HADAMARD_CACHE[cache_key] = H
@@ -52,9 +52,9 @@ def get_hadamard_matrix(n: int, device: torch.device) -> torch.Tensor:
 
 def apply_hadamard_transform(tensor: torch.Tensor, inverse: bool = False) -> torch.Tensor:
     """
-    WHAT: Applies the actual spatial rotation to the weights or activations.
+    Applies the actual spatial rotation to the weights or activations.
     
-    TWEAK HERE: The 'inverse' flag is crucial. During quantization, we rotate 
+    The 'inverse' flag is crucial. During quantization, we rotate 
     forward (inverse=False). During generation/inference, if we quantize activations, 
     we must rotate them back (inverse=True) before passing them to the next layer.
     """

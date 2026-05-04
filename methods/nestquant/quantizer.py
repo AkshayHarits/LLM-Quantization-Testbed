@@ -26,19 +26,15 @@ class ScaleSelectionResult:
 
 class NestQuantizer(BaseQuantizer):
     """
-    NestQuant CPU simulation with DP-selected E8 scale levels.
 
-    Implemented pieces from the supporting document:
+    Implemented:
     - Hadamard rotation / gaussianization.
     - Row L2 normalization to norm sqrt(n).
     - 8D block decomposition.
     - Candidate beta pool from calibration blocks.
     - First-beta assignment and dynamic programming over k selected scales.
-    - Optional weight-only LDLQ-style Hessian error feedback.
+    - Optional weight-only LDLQ-style Hessian error feedback.(not working right now)
 
-    Not implemented by design: CUDA kernels, packed Voronoi-code storage, KV
-    cache quantization, and activation quantization. The QA-LDLQ target shift is
-    therefore not used in the weight-only default path.
     """
 
     method_name = "nestquant"
