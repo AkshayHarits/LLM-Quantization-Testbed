@@ -1,4 +1,4 @@
-#Weight-Only Quantization Testbed:
+## Weight-Only Quantization Testbed:
 
 This document explains what is implemented in this repo, how experiments are run, what the saved metrics/plots mean , etc.
 
@@ -107,7 +107,7 @@ For each method and model:
 Implemented (weight-only):
 
 1. Flatten weight rows.
-2. Hadamard rotation.(deterministic)
+2. Hadamard rotation(deterministic).
 3. Row normalization to target norm `sqrt(n)`.
 4. Split into 8D blocks.
 5. Build candidate beta pool from block norms:
