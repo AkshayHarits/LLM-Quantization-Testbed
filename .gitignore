@@ -1,0 +1,10 @@
+venv/
+env/
+ENV/
+.venv/
+.conda/
+*.env
+
+_pycache_/
+data/
+outputs/

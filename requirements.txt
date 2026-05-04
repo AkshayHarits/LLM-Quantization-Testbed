@@ -1,0 +1,18 @@
+# Core Machine Learning & Neural Networks
+torch
+torchvision
+
+# Hugging Face Ecosystem
+transformers
+accelerate
+datasets
+tqdm
+
+# Computation and Array Manipulation
+numpy
+scipy
+pandas
+
+# Visualization and Plotting
+matplotlib
+seaborn
